@@ -1,2 +1,3 @@
 Active Directory Cmdlets in Windows PowerShell: http://technet.microsoft.com/de-de/library/ee617195.aspx
 Connect to MYSQL database from Powershell: http://mark.primaryblogger.co.uk/powershell/connect-to-mysql-database-from-powershell/
+ConvertTo-SecureString: http://technet.microsoft.com/en-us/library/hh849818.aspx
