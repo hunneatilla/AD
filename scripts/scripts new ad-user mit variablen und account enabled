@@ -1,0 +1,5 @@
+#anlegen
+$secure_string_pwd = convertto-securestring "test1234!" -asplaintext -force
+New-ADUser -Name "testi" -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -City "New York" -Company "telekomico" -Country "DE" -Department "Jiggy" -Description "König der Welt" -Division "Vertrieb" -EmailAddress "funky@test.com" -EmployeeID "1" -GivenName "chris" -MobilePhone "542159" -Office "room" -OfficePhone "7521555542" -Organization "Bosses" -PasswordNeverExpires $false -PasswordNotRequired $false -State "Las Vegas" -StreetAddress "street" -Surname "hans" -Title "Boss" -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true
+#löschen
+Remove-ADUser -Identity "testi"
