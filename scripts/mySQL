@@ -3,27 +3,37 @@ CREATE DATABASE smart;
 use smart;
 
 CREATE TABLE gruppe (
-id int(10) NOT NULL AUTO_INCREMENT,
+id int(10) NOT NULL,
 name varchar(50),
 PRIMARY KEY (id)
 );
 
 CREATE TABLE ou (
-id int(10) NOT NULL AUTO_INCREMENT,
+id int(10) NOT NULL,
 name varchar(50),
 PRIMARY KEY (id)
 );
 
 CREATE TABLE benutzer (
-id int(10) NOT NULL AUTO_INCREMENT,
+id int(10) NOT NULL,
 ou int(10),
-name varchar(50),
+login varchar(50),
+password varchar(50),
+beschreibung varchar(50), #Position/Aufgabe
+vorname varchar(50),
+nachname varchar(50),
+email varchar(50),
+ophone varchar(50),
+mphone varchar(50),
+company varchar(50),
+abteilung varchar(50),
+office varchar(50),
 PRIMARY KEY (id),
 FOREIGN KEY (ou) REFERENCES ou(id)
 );
 
 CREATE TABLE rechner (
-id int(10) NOT NULL AUTO_INCREMENT,
+id int(10) NOT NULL,
 ou int(10),
 name varchar(50),
 PRIMARY KEY (id),
@@ -45,3 +55,16 @@ PRIMARY KEY (rechner,gruppe),
 FOREIGN KEY (rechner) REFERENCES rechner(id),
 FOREIGN KEY (gruppe) REFERENCES gruppe(id)
 );
+
+INSERT INTO gruppe (name)
+VALUES ();
+
+INSERT INTO ou (id, name)
+VALUES (0, SmartGmbH), (1, Geschäftsführung), (2, Verwaltung), (3, Schulung), (4, Allgemein), (5, Technik), (6, Raum1), (7, Raum2), (8, Raum3), (9, Raum4), (10, Raum5), (11, Raum6);
+
+INSERT INTO benutzer () 
+VALUES (), 
+(), 
+();
+
+
