@@ -1,0 +1,47 @@
+DROP DATABASE IF EXISTS smart;
+CREATE DATABASE smart;
+use smart;
+
+CREATE TABLE gruppe (
+id int(10) NOT NULL AUTO_INCREMENT,
+name varchar(50),
+PRIMARY KEY (id)
+);
+
+CREATE TABLE ou (
+id int(10) NOT NULL AUTO_INCREMENT,
+name varchar(50),
+PRIMARY KEY (id)
+);
+
+CREATE TABLE benutzer (
+id int(10) NOT NULL AUTO_INCREMENT,
+ou int(10),
+name varchar(50),
+PRIMARY KEY (id),
+FOREIGN KEY (ou) REFERENCES ou(id)
+);
+
+CREATE TABLE rechner (
+id int(10) NOT NULL AUTO_INCREMENT,
+ou int(10),
+name varchar(50),
+PRIMARY KEY (id),
+FOREIGN KEY (ou) REFERENCES ou(id)
+);
+
+CREATE TABLE benutzer_gruppe (
+benutzer int(10),
+gruppe int(10),
+PRIMARY KEY (benutzer,gruppe),
+FOREIGN KEY (benutzer) REFERENCES benutzer(id),
+FOREIGN KEY (gruppe) REFERENCES gruppe(id)
+);
+
+CREATE TABLE rechner_gruppe (
+rechner int(10),
+gruppe int(10),
+PRIMARY KEY (rechner,gruppe),
+FOREIGN KEY (rechner) REFERENCES rechner(id),
+FOREIGN KEY (gruppe) REFERENCES gruppe(id)
+);
