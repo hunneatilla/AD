@@ -48,20 +48,28 @@ echo $mysqltest
 #####################################################################################################
 #####################################################################################################
 
-$global:Query = 'SELECT `field1`, `field2`, `field3` FROM table'
-$mysqlresults = Get-SqlDataTable $Query
+## $global:Query = 'SELECT `field1`, `field2`, `field3` FROM table'
+## $mysqlresults = Get-SqlDataTable $Query
 
-ForEach ($result in $mysqlresults){
-	echo $($result.field1)
-	echo $($result.field2)
-	echo $($result.field3)
-}
+## ForEach ($result in $mysqlresults){
+##	echo $($result.field1)
+##	echo $($result.field2)
+##	echo $($result.field3)
+## }
 
 #####################################################################################################
 #####################################################################################################
 
 ## OUs anlegen
+$global:Query = 'SELECT * FROM ou'
+$mysqlresults = Get-SqlDataTable $Query
 
+ForEach ($result in $mysqlresults){
+	## echo $($result.name)
+	## echo $($result.description)
+	New-ADOrganizationalUnit -Name $($result.name) -Description $($result.description) -DisplayName $($result.name) -ProtectedFromAccidentalDeletion $false
+
+}
 
 ## Gruppen anlegen
 
