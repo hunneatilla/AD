@@ -38,7 +38,7 @@ Set-SqlConnection $server $username $password $database
 
 $mysqltest = Get-SqlDataTable 'SHOW STATUS'
 
-echo $mysqltest
+## echo $mysqltest
 
 #####################################################################################################
 #####################################################################################################
