@@ -40,8 +40,9 @@ User:
 [string]$city = "Miami"
 [string]$state = "Florida"
 [string]$country = "DE"
+[string]$path = "\\dc\profiles$\%username%"
 $secure_string_pwd = convertto-securestring "test1234!" -asplaintext -force
-New-ADUser -Name $name -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -City $city -Company $company -Country $country -Department $department -Description $description -EmailAddress $email -EmployeeID $eid -GivenName $gname -MobilePhone $mphone -Office $office -OfficePhone $ophone -PasswordNeverExpires $false -PasswordNotRequired $false -State $state -StreetAddress $street -Surname $surname -Title $title -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true
+New-ADUser -Name $name -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -City $city -Company $company -Country $country -Department $department -Description $description -EmailAddress $email -EmployeeID $eid -GivenName $gname -MobilePhone $mphone -Office $office -OfficePhone $ophone -PasswordNeverExpires $false -PasswordNotRequired $false -State $state -StreetAddress $street -Surname $surname -Title $title -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath $path
 #description und title evt. zusammen
 #del
 Remove-ADUser -Identity "atopar"
