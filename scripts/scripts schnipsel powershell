@@ -51,3 +51,13 @@ User in OU verlegen:
 Get-ADUser -Identity "atopar" | Move-ADObject -TargetPath "OU=Test,DC=smart-in-hamburg,DC=org"#
 #pcs
 Get-ADComputer -Identity "R1C1" | Move-ADObject -TargetPath "OU=Test,DC=smart-in-hamburg,DC=org"
+------------------------------------------------------------------------------------------------
+PC Konten anlegen:
+
+[string]$description = "BossPC"
+[string]$displayname = "PCBoss"
+[string]$dnsname = "pc1.smart-in-hamburg.org"
+[string]$name = "the boss pc"
+[string]$manage = "admin"
+[string]$os = "Windows 8"
+New-ADComputer -Description $description -DisplayName $displayname -DNSHostName $dnsname -Name $name -ManagedBy $manage -OperatingSystem $os 
