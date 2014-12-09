@@ -91,7 +91,7 @@ INSERT INTO benutzer
 (9,	'5',	'sonja.meier',					'Test1234!',		'Leitung Integriete Systeme',			'Sonja',				'Meier',				'Sonja.Meier@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'129'),
 (10,	'5',	'karl.koch',					'Test1234!',		'Datensicherheit',						'Karl',				'Koch',				'Karl.Koch@smart.org',					'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'130'),
 (11,	'5',	'bernd.vogel',					'Test1234!',		'Netzwerktechnik',						'Bernd',				'Vogel',				'Bernd.Vogel@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'131'),
-(12,	'5',	'jean.jacques.rousseau',	'Test1234!',		'Verwaltung Freier Dozenten',			'Jean-Jacques',	'Rousseau',			'Jean-Jacques.Rousseau@smart.org',	'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'132'),
+(12,	'5',	'jean_jacques.rousseau',	'Test1234!',		'Verwaltung Freier Dozenten',			'Jean-Jacques',	'Rousseau',			'Jean-Jacques.Rousseau@smart.org',	'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'132'),
 (13,	'4',	'ben.schneidermann',			'Test1234!',		'Informationsvisualisierung',			'Ben',				'Schneidermann',	'Ben.Schneidermann@smart.org',		'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'133'),
 (14,	'4',	'claude.monet',				'Test1234!',		'Grafik',									'Claude',			'Monet',				'Claude.Monet@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'134'),
 (15,	'4',	'ikujiro.nonaka',				'Test1234!',		'Projektmanagment',						'Ikujiro',			'Nonaka',			'Ikujiro.Nonaka@smart.org',			'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'135'),
@@ -381,5 +381,5 @@ INSERT INTO benutzer_gruppe (benutzer,gruppe) VALUES
 (90,3),
 (91,3);
 
-INSERT INTO rechner_gruppe (id, ou, name, description, displayname, manage, os) VALUES 
-VALUES (1,1,'pc_1','computer','computer','Administrator','os');
+INSERT INTO rechner (id, ou, name, description, displayname, manage, os) VALUES 
+(1,1,'pc_1','computer','computer','Administrator','Windows8');
