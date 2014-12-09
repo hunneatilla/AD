@@ -17,9 +17,9 @@ ForEach ($result in $mysqlresults){
 ## PCs anlegen
 $global:Query = 'SELECT * FROM rechner'
 $mysqlresults = Get-SqlDataTable $Query
-[string]$dnsname = $($result.name)+".smart-in-hamburg.org"
 
 ForEach ($result in $mysqlresults){
+	[string]$dnsname = $($result.name)+".smart-in-hamburg.org"
 	New-ADComputer -Description $($result.description) -DisplayName $($result.displayname) -DNSHostName $dnsname -Name $($result.name) -ManagedBy $($result.manage) -OperatingSystem $($result.os)
 }
 
@@ -45,7 +45,8 @@ $global:Query = 'SELECT benutzer.login as benutzer, ou.name as ou FROM benutzer,
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-	Get-ADUser -Identity $($result.benutzer) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+	[string]$path = "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+	Get-ADUser -Identity $($result.benutzer) | Move-ADObject -TargetPath $path
 }
 
 ## PC
@@ -53,7 +54,8 @@ $global:Query = 'SELECT rechner.name as rechner, ou.name as ou FROM rechner, ou 
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-	Get-ADComputer -Identity $($result.rechner) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+	[string]$path = "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+	Get-ADComputer -Identity $($result.rechner) | Move-ADObject -TargetPath $path
 }
 
 ## User in Gruppen verlegen
