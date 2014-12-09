@@ -1,0 +1,1490 @@
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:52 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:59 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:66 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:72 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:79 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:85 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-SqlDataTable : Die Benennung "Get-SqlDataTable" wurde nicht als Name eines Cmdlet, einer Funktion, einer Skriptdatei oder eines ausführbaren Programms erkannt. Überprüfen Sie die Schreibweise des Namens, oder ob der Pfad korrekt ist (sofern enthalten), 
+und wiederholen Sie den Vorgang.
+In Zeile:91 Zeichen:17
++ $mysqlresults = Get-SqlDataTable $Query
++                 ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Get-SqlDataTable:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+
+PS C:\Users\Administrator> #####################################################################################################
+#####################################################################################################
+## Verbindung zur mySQL-Datenbank herstellen
+#####################################################################################################
+#####################################################################################################
+
+## MYSQL Connection
+## This requires mysql connector net
+## All variables will need changing to suit your environment
+$server= "localhost"
+$username= "root"
+$password= ""
+$database= "smart"	#############################################################################
+## The path will need to match the mysql connector you downloaded
+[void][system.reflection.Assembly]::LoadFrom("C:\Program Files\MySQL\bin\MySQL.Data.dll")
+function global:Set-SqlConnection ( $server = $(Read-Host "SQL Server Name"), $username = $(Read-Host "Username"), $password = $(Read-Host "Password"), $database = $(Read-Host "Default Database") ) {
+$SqlConnection.ConnectionString = "server=$server;user id=$username;password=$password;database=$database;pooling=false;Allow Zero Datetime=True;"
+}
+function global:Get-SqlDataTable( $Query = $(if (-not ($Query -gt $null)) {Read-Host "Query to run"}) ) {
+if (-not ($SqlConnection.State -like "Open")) { $SqlConnection.Open() }
+$SqlCmd = New-Object MySql.Data.MySqlClient.MySqlCommand $Query, $SqlConnection
+$SqlAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
+$SqlAdapter.SelectCommand = $SqlCmd
+$DataSet = New-Object System.Data.DataSet
+$SqlAdapter.Fill($DataSet) | Out-Null
+$SqlConnection.Close()
+return $DataSet.Tables[0]
+}
+Set-Variable SqlConnection (New-Object MySql.Data.MySqlClient.MySqlConnection) -Scope Global -Option AllScope -Description "Personal variable for Sql Query functions"
+Set-SqlConnection $server $username $password $database
+$mysqltest = Get-SqlDataTable 'SHOW STATUS'
+## echo $mysqltest
+#####################################################################################################
+#####################################################################################################
+## Select und ForEach Beispiel
+#####################################################################################################
+#####################################################################################################
+## $global:Query = 'SELECT `field1`, `field2`, `field3` FROM table'
+## $mysqlresults = Get-SqlDataTable $Query
+## ForEach ($result in $mysqlresults){
+## echo $($result.field1)
+## echo $($result.field2)
+## echo $($result.field3)
+## }
+#####################################################################################################
+#####################################################################################################
+
+
+
+## User anlegen
+$global:Query = 'SELECT * FROM benutzer'
+$mysqlresults = Get-SqlDataTable $Query
+ForEach ($result in $mysqlresults){
+$secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
+New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -Company $($result.company) -Department $($result.abteilung) -Description $($result.description) -EmailAddress $($result.email) -EmployeeID $($result.id) -GivenName $($result.vorname) -MobilePhone $($result.mphone) -Office $($result.office) -OfficePhone $($result.ophone) -PasswordNeverExpires $false -PasswordNotRequired $false -Surname $($result.nachname) -Title $($result.description) -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath "\\dc\profiles$\%username%"
+}
+## PCs anlegen
+$global:Query = 'SELECT * FROM rechner'
+$mysqlresults = Get-SqlDataTable $Query
+[string]$dnsname = ".smart-in-hamburg.org"
+ForEach ($result in $mysqlresults){
+New-ADComputer -Description $($result.description) -DisplayName $($result.displayname) -DNSHostName $($result.name)+$dnsname -Name $($result.name) -ManagedBy $($result.manage) -OperatingSystem $($result.os)
+}
+## OUs anlegen
+$global:Query = 'SELECT * FROM ou'
+$mysqlresults = Get-SqlDataTable $Query
+ForEach ($result in $mysqlresults){
+New-ADOrganizationalUnit -Name $($result.name) -Description $($result.description) -DisplayName $($result.name) -ProtectedFromAccidentalDeletion $false
+}
+## Gruppen anlegen
+$global:Query = 'SELECT * FROM gruppe'
+$mysqlresults = Get-SqlDataTable $Query
+ForEach ($result in $mysqlresults){
+New-ADGroup -Name $($result.name) -ManagedBy $($result.manager) -Description $($result.description) -DisplayName $($result.name) -GroupScope Global
+}
+## User und PCs in OU verlegen
+## Benutzer
+$global:Query = 'SELECT benutzer.name as benutzer, ou.name as ou FROM benutzer, ou WHERE benutzer.ou = ou.id'
+$mysqlresults = Get-SqlDataTable $Query
+ForEach ($result in $mysqlresults){
+Get-ADUser -Identity $($result.benutzer) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+}
+## PC
+$global:Query = 'SELECT rechner.name as rechner, ou.name as ou FROM rechner, ou WHERE rechner.ou = ou.id'
+$mysqlresults = Get-SqlDataTable $Query
+ForEach ($result in $mysqlresults){
+Get-ADUser -Identity $($result.rechner) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+}
+## User in Gruppen verlegen
+$global:Query = 'SELECT benutzer.name as benutzer, gruppe.name as gruppe FROM benutzer, gruppe, benutzer_gruppe WHERE benutzer.id = benutzer_gruppe.benutzer AND gruppe.id = benutzer_gruppe.gruppe'
+$mysqlresults = Get-SqlDataTable $Query
+ForEach ($result in $mysqlresults){
+Add-ADGroupMember -Identity $($result.gruppe) -Member $($result.benutzer)
+}
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=grace.hopper...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=silke.neuer,...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=ben.schneide...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=claudia.wigg...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=gaby.itte,CN...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=joschua.bloc...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=yukihiro.mat...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=lars.stallbo...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=norbert.witt...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=sonja.meier,...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=karl.koch,CN...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=bernd.vogel,...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Der angegebene Name hat ein falsches Format für einen Kontennamen
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (CN=jean-jacques...-hamburg,DC=org:String) [New-ADUser], ADException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1315,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=ben.schneide...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=claude.monet...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=ikujiro.nona...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=birgit.fisch...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=gaby.dohm,CN...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=norbert.dick...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=elfriede.gle...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p1,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p2,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p3,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p4,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p5,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p6,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p7,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p8,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p9,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p10,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p11,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s1.p12,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p1,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p2,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p3,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p4,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p5,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p6,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p7,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p8,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p9,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p10,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p11,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s2.p12,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p1,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p2,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p3,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p4,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p5,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p6,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p7,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p8,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p9,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p10,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p11,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s3.p12,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p1,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p2,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p3,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p4,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p5,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p6,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p7,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p8,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p9,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p10,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p11,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s4.p12,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p1,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p2,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p3,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p4,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p5,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p6,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p7,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p8,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p9,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p10,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p11,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s5.p12,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p1,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p2,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p3,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p4,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p5,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p6,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p7,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p8,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p9,CN=Use...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p10,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p11,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+ConvertTo-SecureString : Das Argument kann nicht an den Parameter "String" gebunden werden, da es NULL ist.
+In Zeile:54 Zeichen:45
++ $secure_string_pwd = convertto-securestring $($result.pass) -asplaintext -force
++                                             ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [ConvertTo-SecureString], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationErrorNullNotAllowed,Microsoft.PowerShell.Commands.ConvertToSecureStringCommand
+ 
+New-ADUser : Das Kennwort entspricht nicht den Domänenanforderungen bezüglich Länge, Komplexität und Verlauf.
+In Zeile:55 Zeichen:1
++ New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotia ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=s6.p12,CN=Us...-hamburg,DC=org:String) [New-ADUser], ADPasswordComplexityException
+    + FullyQualifiedErrorId : ActiveDirectoryServer:1325,Microsoft.ActiveDirectory.Management.Commands.NewADUser
+ 
+New-ADComputer : Das Argument für den Parameter "Name" kann nicht überprüft werden. Das Argument ist NULL oder leer. Geben Sie ein Argument an, das nicht NULL oder leer ist, und führen Sie dann den Befehl erneut aus.
+In Zeile:62 Zeichen:132
++ ... $dnsname -Name $($result.name) -ManagedBy $($result.manage) -OperatingSystem $($ ...
++                    ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (:) [New-ADComputer], ParameterBindingValidationException
+    + FullyQualifiedErrorId : ParameterArgumentValidationError,Microsoft.ActiveDirectory.Management.Commands.NewADComputer
+ 
+New-ADGroup : Das erweiterte Attribut stellt Identitätsinformationen bereit: "ManagedBy" konnte nicht aufgelöst werden. Grund: "Unter "DC=smart-in-hamburg,DC=org" kann kein Objekt mit der ID "admin" gefunden werden.".
+In Zeile:74 Zeichen:1
++ New-ADGroup -Name $($result.name) -ManagedBy $($result.manager) -Description $($ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=global,CN=Us...-hamburg,DC=org:String) [New-ADGroup], ADIdentityResolutionException
+    + FullyQualifiedErrorId : ActiveDirectoryCmdlet:Microsoft.ActiveDirectory.Management.ADIdentityResolutionException,Microsoft.ActiveDirectory.Management.Commands.NewADGroup
+ 
+New-ADGroup : Das erweiterte Attribut stellt Identitätsinformationen bereit: "ManagedBy" konnte nicht aufgelöst werden. Grund: "Unter "DC=smart-in-hamburg,DC=org" kann kein Objekt mit der ID "admin" gefunden werden.".
+In Zeile:74 Zeichen:1
++ New-ADGroup -Name $($result.name) -ManagedBy $($result.manager) -Description $($ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=mitarbeiter,...-hamburg,DC=org:String) [New-ADGroup], ADIdentityResolutionException
+    + FullyQualifiedErrorId : ActiveDirectoryCmdlet:Microsoft.ActiveDirectory.Management.ADIdentityResolutionException,Microsoft.ActiveDirectory.Management.Commands.NewADGroup
+ 
+New-ADGroup : Das erweiterte Attribut stellt Identitätsinformationen bereit: "ManagedBy" konnte nicht aufgelöst werden. Grund: "Unter "DC=smart-in-hamburg,DC=org" kann kein Objekt mit der ID "admin" gefunden werden.".
+In Zeile:74 Zeichen:1
++ New-ADGroup -Name $($result.name) -ManagedBy $($result.manager) -Description $($ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=schulungslei...-hamburg,DC=org:String) [New-ADGroup], ADIdentityResolutionException
+    + FullyQualifiedErrorId : ActiveDirectoryCmdlet:Microsoft.ActiveDirectory.Management.ADIdentityResolutionException,Microsoft.ActiveDirectory.Management.Commands.NewADGroup
+ 
+New-ADGroup : Das erweiterte Attribut stellt Identitätsinformationen bereit: "ManagedBy" konnte nicht aufgelöst werden. Grund: "Unter "DC=smart-in-hamburg,DC=org" kann kein Objekt mit der ID "admin" gefunden werden.".
+In Zeile:74 Zeichen:1
++ New-ADGroup -Name $($result.name) -ManagedBy $($result.manager) -Description $($ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidData: (CN=schulungstei...-hamburg,DC=org:String) [New-ADGroup], ADIdentityResolutionException
+    + FullyQualifiedErrorId : ActiveDirectoryCmdlet:Microsoft.ActiveDirectory.Management.ADIdentityResolutionException,Microsoft.ActiveDirectory.Management.Commands.NewADGroup
+ 
+Ausnahme beim Aufrufen von "Fill" mit 1 Argument(en):  "Unknown column 'benutzer.name' in 'field list'"
+In Zeile:25 Zeichen:1
++ $SqlAdapter.Fill($DataSet) | Out-Null
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : MySqlException
+ 
+Ausnahme beim Aufrufen von "Fill" mit 1 Argument(en):  "Unknown column 'benutzer.name' in 'field list'"
+In Zeile:25 Zeichen:1
++ $SqlAdapter.Fill($DataSet) | Out-Null
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : MySqlException
+ 
+
+PS C:\Users\Administrator> 
