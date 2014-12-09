@@ -38,3 +38,22 @@ $mysqlresults = Get-SqlDataTable $Query
 ForEach ($result in $mysqlresults){
 	New-ADGroup -Name $($result.name) -ManagedBy $($result.manager) -Description $($result.description) -DisplayName $($result.name) -GroupScope Global
 }
+
+## User und PCs in OU verlegen
+## Benutzer
+$global:Query = 'SELECT benutzer.name as benutzer, ou.name as ou FROM benutzer, ou WHERE benutzer.ou = ou.id'
+$mysqlresults = Get-SqlDataTable $Query
+
+ForEach ($result in $mysqlresults){
+	Get-ADUser -Identity $($result.benutzer) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+}
+
+## PC
+$global:Query = 'SELECT rechner.name as rechner, ou.name as ou FROM rechner, ou WHERE rechner.ou = ou.id'
+$mysqlresults = Get-SqlDataTable $Query
+
+ForEach ($result in $mysqlresults){
+	Get-ADUser -Identity $($result.rechner) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+}
+
+## User und PCs in Gruppen verlegen
