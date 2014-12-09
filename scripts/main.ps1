@@ -53,7 +53,7 @@ $global:Query = 'SELECT rechner.name as rechner, ou.name as ou FROM rechner, ou 
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-	Get-ADUser -Identity $($result.rechner) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
+	Get-ADComputer -Identity $($result.rechner) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
 }
 
 ## User in Gruppen verlegen
