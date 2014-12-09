@@ -34,11 +34,11 @@ FOREIGN KEY (ou) REFERENCES ou(id)
 CREATE TABLE rechner (
 id int(10) NOT NULL,
 ou int(10),
-name varchar(50),         #pc_xyz
+name varchar(50), #pc_xyz
 description varchar(100), #bla bla
-displayname varchar(50),  #pc_person
-manage varchar(50),       #admin
-os varchar(50),           #Windows 8
+displayname varchar(50), #pc_person
+manage varchar(50), #admin
+os varchar(50), #Windows 8
 PRIMARY KEY (id),
 FOREIGN KEY (ou) REFERENCES ou(id)
 );
@@ -56,13 +56,11 @@ PRIMARY KEY (rechner,gruppe),
 FOREIGN KEY (rechner) REFERENCES rechner(id),
 FOREIGN KEY (gruppe) REFERENCES gruppe(id)
 );
-
 INSERT INTO gruppe (id,name,manager,description)
 VALUES (0,'global','Administrator','Gruppe für alle'),
 (1,'mitarbeiter','Administrator','Gruppe für Mitarbeiter (inkl. Schulungsleiter)'),
 (2,'schulungsleiter','Administrator','Gruppe für Schulungsleiter'),
 (3,'schulungsteilnehmer','Administrator','Gruppe für Schulungsteilnehmer');
-
 INSERT INTO ou (id,name,description) VALUES
 (0,'SmartGmbH','Gesamtes Unternehmen'),
 (1,'Geschäftsführung','Geschäftsführung'),
@@ -76,32 +74,29 @@ INSERT INTO ou (id,name,description) VALUES
 (9,'Raum4','Schulungen Raum4'),
 (10,'Raum5','Schulungen Raum5'),
 (11,'Raum6','Schulungen Raum6');
-
-INSERT INTO benutzer 
-(id,	ou,	login,							password,	description,								vorname,				nachname,			email,										ophone,			mphone,		company,	abteilung,					office) VALUES 
-(0,	'1',	'grace.hopper',				'Test1234!',		'Geschäftsführung',						'Grace',				'Hopper',			'grace.hopper@smart.org',				'04054000755',	'99999999',	'Smart',	'',							'120'),
-(1,	'1',	'silke.neuer',					'Test1234!',		'Recht und Corporate Governance',	'Silke',				'Neuer',				'Silke.Neuer@smart.org',				'04054000756',	'99999999',	'Smart',	'',							'121'),
-(2,	'1',	'ben.sneidermann',			'Test1234!',		'Datenschutzbeauftragter',				'Ben',				'Sneidermann',	'Ben.Sneidermann@smart.org',		'04054000757',	'99999999',	'Smart',	'',							'122'),
-(3,	'5',	'claudia.wigge',				'Test1234!',		'Eine Beschreibung',						'Claudia',			'Wigge',				'Claudia.Wigge@smart.org',				'04054000758',	'99999999',	'Smart',	'Schulungen Technik',	'123'),
-(4,	'5',	'gaby.witte',					'Test1234!',		'Eine Beschreibung',						'Gaby',				'Witte',				'Gaby.Witte@smart.org',					'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'124'),
-(5,	'5',	'joschua.bloch',				'Test1234!',		'Eine Beschreibung',						'Joschua',			'Bloch',				'Joschua.Bloch@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'125'),
-(6,	'5',	'yukihiro.matsumoto',		'Test1234!',		'Eine Beschreibung',						'Yukihiro',			'Matsumoto',		'Yukihiro.Matsumoto@smart.org',		'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'126'),
-(7,	'5',	'lars.stallbohm',				'Test1234!',		'Eine Beschreibung',						'Lars',				'Stallbohm',		'Lars.Stallbohm@smart.org',			'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'127'),
-(8,	'5',	'norbert.witte',				'Test1234!',		'Leitung Integriete Systeme',			'Norbert',			'Witte',				'Norbert.Witte@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'128'),
-(9,	'5',	'sonja.meier',					'Test1234!',		'Leitung Integriete Systeme',			'Sonja',				'Meier',				'Sonja.Meier@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'129'),
-(10,	'5',	'karl.koch',					'Test1234!',		'Datensicherheit',						'Karl',				'Koch',				'Karl.Koch@smart.org',					'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'130'),
-(11,	'5',	'bernd.vogel',					'Test1234!',		'Netzwerktechnik',						'Bernd',				'Vogel',				'Bernd.Vogel@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'131'),
-(12,	'5',	'jean.rousseau',	'Test1234!',		'Verwaltung Freier Dozenten',			'Jean-Jacques',	'Rousseau',			'Jean-Jacques.Rousseau@smart.org',	'04054000759',	'99999999',	'Smart',	'Schulungen Technik',	'132'),
-(13,	'4',	'ben.sneidermann2',			'Test1234!',		'Informationsvisualisierung',			'Ben',				'Sneidermann',	'Ben.Sneidermann@smart.org',		'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'133'),
-(14,	'4',	'claude.monet',				'Test1234!',		'Grafik',									'Claude',			'Monet',				'Claude.Monet@smart.org',				'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'134'),
-(15,	'4',	'ikujiro.nonaka',				'Test1234!',		'Projektmanagment',						'Ikujiro',			'Nonaka',			'Ikujiro.Nonaka@smart.org',			'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'135'),
-(16,	'4',	'birgit.fischer',				'Test1234!',		'Verwaltung Freier Dozenten',			'Birgit',			'Fischer',			'Birgit.Fischer@smart.org',			'04054000759',	'99999999',	'Smart',	'Schulungen Allgemein',	'136'),
-(17,	'2',	'gaby.dohm',					'Test1234!',		'Sekreteriat',								'Gaby',				'Dohm',				'Gaby.Dohm@smart.org',					'04054000759',	'99999999',	'Smart',	'Verwaltung',				'137'),
-(18,	'2',	'norbert.dickel',				'Test1234!',		'EDV',										'Norbert',			'Dickel',			'Norbert.Dickel@smart.org',			'04054000759',	'99999999',	'Smart',	'Verwaltung',				'138'),
-(19,	'2',	'elfriede.gleibel',			'Test1234!',		'Buchhaltung',								'Elfriede',			'Gleibel',			'Elfriede.Gleibel@smart.org',			'04054000759',	'99999999',	'Smart',	'Verwaltung',				'138');
-
-
-INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES 
+INSERT INTO benutzer
+(id, ou, login, password, description, vorname, nachname, email, ophone, mphone, company, abteilung, office) VALUES
+(0, '1', 'grace.hopper', 'Test1234!', 'Geschäftsführung', 'Grace', 'Hopper', 'grace.hopper@smart.org', '04054000755', '99999999', 'Smart', '', '120'),
+(1, '1', 'silke.neuer', 'Test1234!', 'Recht und Corporate Governance', 'Silke', 'Neuer', 'Silke.Neuer@smart.org', '04054000756', '99999999', 'Smart', '', '121'),
+(2, '1', 'ben.sneidermann', 'Test1234!', 'Datenschutzbeauftragter', 'Ben', 'Sneidermann', 'Ben.Sneidermann@smart.org', '04054000757', '99999999', 'Smart', '', '122'),
+(3, '5', 'claudia.wigge', 'Test1234!', 'Eine Beschreibung', 'Claudia', 'Wigge', 'Claudia.Wigge@smart.org', '04054000758', '99999999', 'Smart', 'Schulungen Technik', '123'),
+(4, '5', 'gaby.witte', 'Test1234!', 'Eine Beschreibung', 'Gaby', 'Witte', 'Gaby.Witte@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '124'),
+(5, '5', 'joschua.bloch', 'Test1234!', 'Eine Beschreibung', 'Joschua', 'Bloch', 'Joschua.Bloch@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '125'),
+(6, '5', 'yukihiro.matsumoto', 'Test1234!', 'Eine Beschreibung', 'Yukihiro', 'Matsumoto', 'Yukihiro.Matsumoto@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '126'),
+(7, '5', 'lars.stallbohm', 'Test1234!', 'Eine Beschreibung', 'Lars', 'Stallbohm', 'Lars.Stallbohm@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '127'),
+(8, '5', 'norbert.witte', 'Test1234!', 'Leitung Integriete Systeme', 'Norbert', 'Witte', 'Norbert.Witte@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '128'),
+(9, '5', 'sonja.meier', 'Test1234!', 'Leitung Integriete Systeme', 'Sonja', 'Meier', 'Sonja.Meier@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '129'),
+(10, '5', 'karl.koch', 'Test1234!', 'Datensicherheit', 'Karl', 'Koch', 'Karl.Koch@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '130'),
+(11, '5', 'bernd.vogel', 'Test1234!', 'Netzwerktechnik', 'Bernd', 'Vogel', 'Bernd.Vogel@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '131'),
+(12, '5', 'jean.rousseau', 'Test1234!', 'Verwaltung Freier Dozenten', 'Jean-Jacques', 'Rousseau', 'Jean-Jacques.Rousseau@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '132'),
+(13, '4', 'ben.sneidermann2', 'Test1234!', 'Informationsvisualisierung', 'Ben', 'Sneidermann', 'Ben.Sneidermann@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Allgemein', '133'),
+(14, '4', 'claude.monet', 'Test1234!', 'Grafik', 'Claude', 'Monet', 'Claude.Monet@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Allgemein', '134'),
+(15, '4', 'ikujiro.nonaka', 'Test1234!', 'Projektmanagment', 'Ikujiro', 'Nonaka', 'Ikujiro.Nonaka@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Allgemein', '135'),
+(16, '4', 'birgit.fischer', 'Test1234!', 'Verwaltung Freier Dozenten', 'Birgit', 'Fischer', 'Birgit.Fischer@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Allgemein', '136'),
+(17, '2', 'gaby.dohm', 'Test1234!', 'Sekreteriat', 'Gaby', 'Dohm', 'Gaby.Dohm@smart.org', '04054000759', '99999999', 'Smart', 'Verwaltung', '137'),
+(18, '2', 'norbert.dickel', 'Test1234!', 'EDV', 'Norbert', 'Dickel', 'Norbert.Dickel@smart.org', '04054000759', '99999999', 'Smart', 'Verwaltung', '138'),
+(19, '2', 'elfriede.gleibel', 'Test1234!', 'Buchhaltung', 'Elfriede', 'Gleibel', 'Elfriede.Gleibel@smart.org', '04054000759', '99999999', 'Smart', 'Verwaltung', '138');
+INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (20,'6','s1.p1','Changeme1!','s1.p1','Schulung','s1'),
 (21,'6','s1.p2','Changeme1!','s1.p2','Schulung','s1'),
 (22,'6','s1.p3','Changeme1!','s1.p3','Schulung','s1'),
@@ -114,8 +109,7 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (29,'6','s1.p10','Changeme1!','s1.p10','Schulung','s1'),
 (30,'6','s1.p11','Changeme1!','s1.p11','Schulung','s1'),
 (31,'6','s1.p12','Changeme1!','s1.p12','Schulung','s1');
-
-INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES 
+INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (32,'7','s2.p1','Changeme1!','s2.p1','Schulung','s2'),
 (33,'7','s2.p2','Changeme1!','s2.p2','Schulung','s2'),
 (34,'7','s2.p3','Changeme1!','s2.p3','Schulung','s2'),
@@ -128,8 +122,7 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (41,'7','s2.p10','Changeme1!','s2.p10','Schulung','s2'),
 (42,'7','s2.p11','Changeme1!','s2.p11','Schulung','s2'),
 (43,'7','s2.p12','Changeme1!','s2.p12','Schulung','s2');
-
-INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES 
+INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (44,'8','s3.p1','Changeme1!','s3.p1','Schulung','s3'),
 (45,'8','s3.p2','Changeme1!','s3.p2','Schulung','s3'),
 (46,'8','s3.p3','Changeme1!','s3.p3','Schulung','s3'),
@@ -142,8 +135,7 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (53,'8','s3.p10','Changeme1!','s3.p10','Schulung','s3'),
 (54,'8','s3.p11','Changeme1!','s3.p11','Schulung','s3'),
 (55,'8','s3.p12','Changeme1!','s3.p12','Schulung','s3');
-
-INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES 
+INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (56,'9','s4.p1','Changeme1!','s4.p1','Schulung','s4'),
 (57,'9','s4.p2','Changeme1!','s4.p2','Schulung','s4'),
 (58,'9','s4.p3','Changeme1!','s4.p3','Schulung','s4'),
@@ -156,8 +148,7 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (65,'9','s4.p10','Changeme1!','s4.p10','Schulung','s4'),
 (66,'9','s4.p11','Changeme1!','s4.p11','Schulung','s4'),
 (67,'9','s4.p12','Changeme1!','s4.p12','Schulung','s4');
-
-INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES 
+INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (68,'10','s5.p1','Changeme1!','s5.p1','Schulung','s5'),
 (69,'10','s5.p2','Changeme1!','s5.p2','Schulung','s5'),
 (70,'10','s5.p3','Changeme1!','s5.p3','Schulung','s5'),
@@ -170,8 +161,7 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (77,'10','s5.p10','Changeme1!','s5.p10','Schulung','s5'),
 (78,'10','s5.p11','Changeme1!','s5.p11','Schulung','s5'),
 (79,'10','s5.p12','Changeme1!','s5.p12','Schulung','s5');
-
-INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES 
+INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (80,'11','s6.p1','Changeme1!','s6.p1','Schulung','s6'),
 (81,'11','s6.p2','Changeme1!','s6.p2','Schulung','s6'),
 (82,'11','s6.p3','Changeme1!','s6.p3','Schulung','s6'),
@@ -184,13 +174,12 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (89,'11','s6.p10','Changeme1!','s6.p10','Schulung','s6'),
 (90,'11','s6.p11','Changeme1!','s6.p11','Schulung','s6'),
 (91,'11','s6.p12','Changeme1!','s6.p12','Schulung','s6');
-
-INSERT INTO rechner (id, ou, name, description, displayname, manage, os) VALUES 
+INSERT INTO rechner (id, ou, name, description, displayname, manage, os) VALUES
 (1,1,'pc-ws-001','Lenovo H530','pc_Dr-G-Hopper','Administrator','windows8'),
 (2,1,'pc-ws-002','Lenovo H530','pc_Ben-Sneidermann','Administrator','windows8'),
 (3,1,'pc-ws-003','Lenovo H530','pc_Dr-Silke-Neuer','Administrator','windows8'),
 (4,5,'pc-ws-004','Lenovo H530','pc_Claudia-Wigge','Administrator','windows8'),
-(5,5,'pc-ws-005','Lenovo H530','pc_Gaby-Witte','Administrator','windows8'), 
+(5,5,'pc-ws-005','Lenovo H530','pc_Gaby-Witte','Administrator','windows8'),
 (6,5,'pc-ws-006','Lenovo H530','pc_Joschua-Bloch','Administrator','windows8'),
 (7,5,'pc-ws-007','Lenovo H530','pc_Yukihiro-Matsumoto','Administrator','windows8'),
 (8,5,'pc-ws-008','Lenovo H530','pc_Lars-Stahlbohm','Administrator','windows8'),
@@ -229,18 +218,6 @@ INSERT INTO rechner (id, ou, name, description, displayname, manage, os) VALUES
 (42,7,'pc-ws-042','Lenovo H530','pc_S2-PC10','Administrator','windows8'),
 (43,7,'pc-ws-043','Lenovo H530','pc_S2-PC11','Administrator','windows8'),
 (44,7,'pc-ws-044','Lenovo H530','pc_S2-PC12','Administrator','windows8'),
-(45,7,'pc-ws-045','Lenovo H530','pc_S3-PC1','Administrator','windows8'),
-(46,7,'pc-ws-046','Lenovo H530','pc_S3-PC2','Administrator','windows8'),
-(47,7,'pc-ws-047','Lenovo H530','pc_S3-PC3','Administrator','windows8'),
-(48,7,'pc-ws-048','Lenovo H530','pc_S3-PC4','Administrator','windows8'),
-(49,7,'pc-ws-049','Lenovo H530','pc_S3-PC5','Administrator','windows8'),
-(50,7,'pc-ws-050','Lenovo H530','pc_S3-PC6','Administrator','windows8'),
-(51,7,'pc-ws-051','Lenovo H530','pc_S3-PC7','Administrator','windows8'),
-(52,7,'pc-ws-052','Lenovo H530','pc_S3-PC8','Administrator','windows8'),
-(53,7,'pc-ws-053','Lenovo H530','pc_S3-PC9','Administrator','windows8'),
-(54,7,'pc-ws-054','Lenovo H530','pc_S3-PC10','Administrator','windows8',
-(55,7,'pc-ws-055','Lenovo H530','pc_S3-PC11','Administrator','windows8'),
-(56,7,'pc-ws-056','Lenovo H530','pc_S3-PC12','Administrator','windows8'),
 (57,8,'pc-ws-057','Lenovo H530','pc_S3-PC1','Administrator','windows8'),
 (58,8,'pc-ws-058','Lenovo H530','pc_S3-PC2','Administrator','windows8'),
 (59,8,'pc-ws-059','Lenovo H530','pc_S3-PC3','Administrator','windows8'),
@@ -289,8 +266,7 @@ INSERT INTO rechner (id, ou, name, description, displayname, manage, os) VALUES
 (102,11,'pc-ws-102','Lenovo H530','pc_S6-PC10','Administrator','windows8'),
 (103,11,'pc-ws-103','Lenovo H530','pc_S6-PC11','Administrator','windows8'),
 (104,11,'pc-ws-104','Lenovo H530','pc_S6-PC12','Administrator','windows8');
-
-INSERT INTO benutzer_gruppe (benutzer,gruppe) VALUES 
+INSERT INTO benutzer_gruppe (benutzer,gruppe) VALUES
 (1,0),
 (2,0),
 (3,0),
