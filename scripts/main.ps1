@@ -56,4 +56,10 @@ ForEach ($result in $mysqlresults){
 	Get-ADUser -Identity $($result.rechner) | Move-ADObject -TargetPath "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
 }
 
-## User und PCs in Gruppen verlegen
+## User in Gruppen verlegen
+$global:Query = 'SELECT benutzer.name as benutzer, gruppe.name as gruppe FROM benutzer, gruppe, benutzer_gruppe WHERE benutzer.id = benutzer_gruppe.benutzer AND gruppe.id = benutzer_gruppe.gruppe'
+$mysqlresults = Get-SqlDataTable $Query
+
+ForEach ($result in $mysqlresults){
+	Add-ADGroupMember -Identity $($result.gruppe) -Member $($result.benutzer)
+}
