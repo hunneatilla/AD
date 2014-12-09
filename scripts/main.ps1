@@ -65,3 +65,16 @@ $mysqlresults = Get-SqlDataTable $Query
 ForEach ($result in $mysqlresults){
 	Add-ADGroupMember -Identity $($result.gruppe) -Member $($result.benutzer)
 }
+
+## OUs verschachteln
+Get-ADOrganizationalUnit -Identity "OU=Geschäftsführung,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Geschäftsführung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Verwaltung,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Verwaltung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Schulung,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Allgemein,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Allgemein,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Technik,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Technik,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Raum1,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Raum1,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Raum2,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Raum2,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Raum2,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Raum3,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Raum3,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Raum4,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Raum4,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Raum5,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
+Get-ADOrganizationalUnit -Identity "OU=Raum5,DC=smart-in-hamburg,DC=org" | Move-ADObject -TargetPath "OU=Raum6,OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
