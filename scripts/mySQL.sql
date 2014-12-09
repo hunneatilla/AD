@@ -185,8 +185,9 @@ INSERT INTO benutzer (id,ou,login,password,description,abteilung,office) VALUES
 (90,'11','s6.p11','Changeme1!','s6.p11','Schulung','s6'),
 (91,'11','s6.p12','Changeme1!','s6.p12','Schulung','s6');
 
-INSERT INTO rechner ()
-VALUES ();
+INSERT INTO rechner (id, ou, name, description, displayname, manage, os) VALUES 
+(1,1,'pc_1','computer','computer','Administrator','Windows8');
+
 INSERT INTO benutzer_gruppe (benutzer,gruppe) VALUES 
 (1,0),
 (2,0),
