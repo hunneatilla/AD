@@ -41,7 +41,7 @@ ForEach ($result in $mysqlresults){
 
 ## User und PCs in OU verlegen
 ## Benutzer
-$global:Query = 'SELECT benutzer.name as benutzer, ou.name as ou FROM benutzer, ou WHERE benutzer.ou = ou.id'
+$global:Query = 'SELECT benutzer.login as benutzer, ou.name as ou FROM benutzer, ou WHERE benutzer.ou = ou.id'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
@@ -57,7 +57,7 @@ ForEach ($result in $mysqlresults){
 }
 
 ## User in Gruppen verlegen
-$global:Query = 'SELECT benutzer.name as benutzer, gruppe.name as gruppe FROM benutzer, gruppe, benutzer_gruppe WHERE benutzer.id = benutzer_gruppe.benutzer AND gruppe.id = benutzer_gruppe.gruppe'
+$global:Query = 'SELECT benutzer.login as benutzer, gruppe.name as gruppe FROM benutzer, gruppe, benutzer_gruppe WHERE benutzer.id = benutzer_gruppe.benutzer AND gruppe.id = benutzer_gruppe.gruppe'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
