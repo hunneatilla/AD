@@ -62,3 +62,8 @@ PC Konten anlegen:
 [string]$manage = "admin"
 [string]$os = "Windows 8"
 New-ADComputer -Description $description -DisplayName $displayname -DNSHostName $dnsname -Name $name -ManagedBy $manage -OperatingSystem $os 
+
+------------------------------------------------------------------------------------------------
+User in Gruppe verlegen:
+#user
+Add-ADGroupMember -Identity TestGroup1 -Member $_.UserName 
