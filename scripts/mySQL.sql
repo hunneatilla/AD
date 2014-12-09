@@ -58,10 +58,10 @@ FOREIGN KEY (gruppe) REFERENCES gruppe(id)
 );
 
 INSERT INTO gruppe (id,name,manager,description)
-VALUES (0,'global','admin','Gruppe für alle'),
-(1,'mitarbeiter','admin','Gruppe für Mitarbeiter (inkl. Schulungsleiter)'),
-(2,'schulungsleiter','admin','Gruppe für Schulungsleiter'),
-(3,'schulungsteilnehmer','admin','Gruppe für Schulungsteilnehmer');
+VALUES (0,'global','Administrator','Gruppe für alle'),
+(1,'mitarbeiter','Administrator','Gruppe für Mitarbeiter (inkl. Schulungsleiter)'),
+(2,'schulungsleiter','Administrator','Gruppe für Schulungsleiter'),
+(3,'schulungsteilnehmer','Administrator','Gruppe für Schulungsteilnehmer');
 
 INSERT INTO ou (id,name,description) VALUES
 (0,'SmartGmbH','Gesamtes Unternehmen'),
@@ -381,5 +381,5 @@ INSERT INTO benutzer_gruppe (benutzer,gruppe) VALUES
 (90,3),
 (91,3);
 
-INSERT INTO rechner_gruppe ()
-VALUES ();
+INSERT INTO rechner_gruppe (id, ou, name, description, displayname, manage, os) VALUES 
+VALUES (1,1,'pc_1','computer','computer','Administrator','os');
