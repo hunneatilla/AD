@@ -11,8 +11,9 @@ while(($eingabe = Read-Host -Prompt "Wählen Sie bitte eine Raumnummer -  z.B 4:
 		Q {"Ende"}
 		default {"Ungültige Eingabe"}
    }
-	for ($zahlZwei=1;$zahlZwei -ge 12;$zahlZwei++){
-	Set-ADAccountPassword -Identity FLee -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "Changme1!" -Force)
+	for ($zahlZwei=1;$zahlZwei -le 12;$zahlZwei++){
+	Set-ADAccountPassword -Identity "s" + $zahlEins + ".p"+ $zahlZwei -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "Changme1!" -Force)
 	#Set-ADAccountPassword -Identity "s" + $zahlEins + ".p"+ $zahlZwei -OldPassword (ConvertTo-SecureString -AsPlainText "p@ssw0rd" -Force) -NewPassword (ConvertTo-SecureString -AsPlainText "qwert@12345" -Force)
 	}
+	write-host "Alle Beutzer $zahlEins von Raum wurden zurückgesezt!"
 }
