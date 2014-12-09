@@ -34,7 +34,11 @@ FOREIGN KEY (ou) REFERENCES ou(id)
 CREATE TABLE rechner (
 id int(10) NOT NULL,
 ou int(10),
-name varchar(50),
+name varchar(50),         #pc_xyz
+description varchar(100), #bla bla
+displayname varchar(50),  #pc_person
+manage varchar(50),       #admin
+os varchar(50),           #Windows 8
 PRIMARY KEY (id),
 FOREIGN KEY (ou) REFERENCES ou(id)
 );
