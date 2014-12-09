@@ -76,7 +76,7 @@ $mysqlresults = Get-SqlDataTable $Query
 ForEach ($result in $mysqlresults){
 	[string]$path = "OU="+$($result.ou)+",DC=smart-in-hamburg,DC=org"
 	Get-ADComputer -Identity $($result.rechner) | Move-ADObject -TargetPath $path
-	write-host "Rechner $($result.benutzer) wurde in OU $($result.ou) verlegt."
+	write-host "Rechner $($result.rechner) wurde in OU $($result.ou) verlegt."
 }
 
 ## User in Gruppen verlegen
