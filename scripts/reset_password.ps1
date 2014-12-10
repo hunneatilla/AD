@@ -12,7 +12,7 @@ while(($eingabe = Read-Host -Prompt "Wählen Sie bitte eine Raumnummer -  z.B 4:
 		default {"Ungültige Eingabe"}
    }
 	for ($zahlZwei=1;$zahlZwei -le 12;$zahlZwei++){
-	Set-ADAccountPassword -Identity "s$zahlEins.p$zahlZwei" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "Changeme1!" -Force)
+	Set-ADAccountPassword -Identity "s$zahlEins.p$zahlZwei" -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "Changeme1!" -Force) -ChangePasswordAtLogon $true
 	remove-item C:\smart\home\s$zahlEins.p$zahlZwei\*
 	}
 	write-host "Alle Benutzer $zahlEins von Raum wurden zurückgesezt!"
