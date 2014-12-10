@@ -1,4 +1,4 @@
-$DirectoryPath="c:\temp\homes\homeuser001"
+$DirectoryPath = "c:"
 # $IdentityRef = "DOM1\Karl_Napf"  #User oder Group
 $IdentityRef = Get-ADObject -Identity Benutzer
 
