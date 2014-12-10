@@ -1,3 +1,5 @@
+# http://www.powershellpraxis.de/index.php/berechtigungen
+
 $DirectoryPath = "c:"
 # $IdentityRef = "DOM1\Karl_Napf"  #User oder Group
 $IdentityRef = Get-ADObject -Identity Benutzer
