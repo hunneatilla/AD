@@ -1,0 +1,3 @@
+$DriveL=’Z:’
+$Drive=’\\smart\home\%username%\’
+new-aduser –HomeDrive $HomeDrive –HomeDirectory $HomeDirectory
