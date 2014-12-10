@@ -1,3 +1,4 @@
-$DriveL=’Z:’
-$Drive=’\\smart\home\%username%\’
-new-aduser –HomeDrive $HomeDrive –HomeDirectory $HomeDirectory
+$DriveL = "Z:"
+$Drive = "\\smart\home\%username%\"
+$secure_string_pwd = convertto-securestring "test1234!" -asplaintext -force
+New-ADUser -Name "testi" -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -Company "test" -Department "test" -Description "test" -EmailAddress "test" -EmployeeID "999" -GivenName "test" -MobilePhone "0123456789" -Office "556" -OfficePhone "1256389" -PasswordNeverExpires $false -PasswordNotRequired $false -Surname "tester" -Title "test" -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath "\\dc\profiles$\%username%" -HomeDrive $DriveL -HomeDirectory $Drive
