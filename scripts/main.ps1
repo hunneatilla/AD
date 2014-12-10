@@ -8,6 +8,34 @@ write-host "Verbindung zur Datenbank wird aufgebaut:"
 connect
 write-host "Verbindung aufgebaut!"
 
+## Ordner anlegen
+write-host ""
+write-host "Ordner werden angelegt:"
+New-Item -Path "C:\" -Name "smart" -ItemType directory
+New-Item -Path "C:\smart\" -Name "profile$" -ItemType directory
+New-Item -Path "C:\smart\" -Name "global" -ItemType directory
+New-Item -Path "C:\smart\" -Name "abteilung" -ItemType directory
+New-Item -Path "C:\smart\" -Name "schulung" -ItemType directory
+New-Item -Path "C:\smart\" -Name "home" -ItemType directory
+New-Item -Path "C:\smart\abteilung\" -Name "geschäftsführung" -ItemType directory
+New-Item -Path "C:\smart\abteilung\" -Name "verwaltung" -ItemType directory
+New-Item -Path "C:\smart\abteilung\" -Name "schulung_allgemein" -ItemType directory
+New-Item -Path "C:\smart\abteilung\" -Name "schulung_technik" -ItemType directory
+New-Item -Path "C:\smart\schulung\" -Name "raum1" -ItemType directory
+New-Item -Path "C:\smart\schulung\" -Name "raum2" -ItemType directory
+New-Item -Path "C:\smart\schulung\" -Name "raum3" -ItemType directory
+New-Item -Path "C:\smart\schulung\" -Name "raum4" -ItemType directory
+New-Item -Path "C:\smart\schulung\" -Name "raum5" -ItemType directory
+New-Item -Path "C:\smart\schulung\" -Name "raum6" -ItemType directory
+
+#$global:Query = 'SELECT login FROM benutzer'
+#$mysqlresults = Get-SqlDataTable $Query
+
+#ForEach ($result in $mysqlresults){
+#	New-Item -Path "C:\smart\home\" -Name $($result.login) -ItemType directory
+#}
+write-host "Ordner wurden angelegt!"
+
 ## User anlegen
 write-host ""
 write-host "Benutzer werden angelegt:"
@@ -15,8 +43,11 @@ $global:Query = 'SELECT * FROM benutzer'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
+	$Drive = "\\dc\Homedrive.$($result.login)"
 	$secure_string_pwd = convertto-securestring $($result.password) -asplaintext -force
-	New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -Company $($result.company) -Department $($result.abteilung) -Description $($result.description) -EmailAddress $($result.email) -EmployeeID $($result.id) -GivenName $($result.vorname) -MobilePhone $($result.mphone) -Office $($result.office) -OfficePhone $($result.ophone) -PasswordNeverExpires $false -PasswordNotRequired $false -Surname $($result.nachname) -Title $($result.description) -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath "\\dc\profile$\%username%"
+	New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -Company $($result.company) -Department $($result.abteilung) -Description $($result.description) -EmailAddress $($result.email) -EmployeeID $($result.id) -GivenName $($result.vorname) -MobilePhone $($result.mphone) -Office $($result.office) -OfficePhone $($result.ophone) -PasswordNeverExpires $false -PasswordNotRequired $false -Surname $($result.nachname) -Title $($result.description) -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath "\\dc\profile$\%username%" -HomeDrive "Z:" -HomeDirectory $Drive
+	New-Item -Path "C:\smart\home\" -Name $($result.login) -ItemType directory
+	New-SmbShare -Name Homedrive.$($result.login) -Path C:\smart\home\$($result.login) -Description HomeShare
 	write-host "Benutzer $($result.login) wurde erstellt."
 }
 
@@ -105,34 +136,6 @@ Move-ADObject -Identity "OU=Raum4,DC=smart-in-hamburg,DC=org" -TargetPath "OU=Sc
 Move-ADObject -Identity "OU=Raum5,DC=smart-in-hamburg,DC=org" -TargetPath "OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
 Move-ADObject -Identity "OU=Raum6,DC=smart-in-hamburg,DC=org" -TargetPath "OU=Schulung,OU=SmartGmbH,DC=smart-in-hamburg,DC=org"
 write-host "Verschachtelung abgeschlossen!"
-
-## Ordner anlegen
-write-host ""
-write-host "Ordner werden angelegt:"
-New-Item -Path "C:\" -Name "smart" -ItemType directory
-New-Item -Path "C:\smart\" -Name "profile$" -ItemType directory
-New-Item -Path "C:\smart\" -Name "global" -ItemType directory
-New-Item -Path "C:\smart\" -Name "abteilung" -ItemType directory
-New-Item -Path "C:\smart\" -Name "schulung" -ItemType directory
-New-Item -Path "C:\smart\" -Name "home" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "geschäftsführung" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "verwaltung" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "schulung_allgemein" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "schulung_technik" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum1" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum2" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum3" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum4" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum5" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum6" -ItemType directory
-
-$global:Query = 'SELECT login FROM benutzer'
-$mysqlresults = Get-SqlDataTable $Query
-
-ForEach ($result in $mysqlresults){
-	New-Item -Path "C:\smart\home\" -Name $($result.login) -ItemType directory
-}
-write-host "Ordner wurden angelegt!"
 
 
 
