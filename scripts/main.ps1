@@ -1,6 +1,6 @@
 ## Datei mit der connect-Funktion
-#. C:\mysql_connection.ps1
-. $(Get-Location).Path\mysql_connection.ps1
+. C:\Skripte\mysql_connection.ps1
+#. $(Get-Location).Path\mysql_connection.ps1
 
 ## Funktion um die Verbindung aufzubauen
 write-host ""
