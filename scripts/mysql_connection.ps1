@@ -8,6 +8,9 @@
 
 function connect {
 
+write-host ""
+write-host "Verbindung zur Datenbank wird aufgebaut:"
+
 ## MYSQL Connection
 ## This requires mysql connector net
 
@@ -61,5 +64,7 @@ $mysqltest = Get-SqlDataTable 'SHOW STATUS'
 
 #####################################################################################################
 #####################################################################################################
+
+write-host "Verbindung aufgebaut!"
 
 }
