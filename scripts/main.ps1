@@ -1,12 +1,10 @@
 ## Datei mit der connect-Funktion
-. C:\Skripte\mysql_connection.ps1
 #. $(Get-Location).Path\mysql_connection.ps1
+. C:\Skripte\mysql_connection.ps1 # connect ()
+. C:\Skripte\alc.ps1 # set-acl ($DirectoryPath, $IdentityRef, $rights)
 
 ## Funktion um die Verbindung aufzubauen
-write-host ""
-write-host "Verbindung zur Datenbank wird aufgebaut:"
 connect
-write-host "Verbindung aufgebaut!"
 
 ## Ordner anlegen
 write-host ""
