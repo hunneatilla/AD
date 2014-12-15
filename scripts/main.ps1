@@ -3,7 +3,7 @@
 . C:\Skripte\mysql_connection.ps1 
 # connect ()
 . C:\Skripte\alc.ps1 
-# acl () # set-acl ($DirectoryPath, $IdentityRef, $rights)
+# acl () # setacl ($DirectoryPath, $IdentityRef, $rights)
 . C:\Skripte\folder.ps1 
 # new-folder ()
 . C:\Skripte\share.ps1 
