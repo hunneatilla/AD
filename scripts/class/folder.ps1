@@ -1,6 +1,6 @@
 ## Ordner anlegen
 
-function new-folder
+function new-folder ()
 {
 write-host ""
 write-host "Ordner werden angelegt:"
