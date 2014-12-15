@@ -2,3 +2,7 @@ Ordner
 Shares
 Gruppen
 OUs
+
+ou den gpo zuweisen
+softwareverteilung
+acl
