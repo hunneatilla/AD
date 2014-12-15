@@ -3,7 +3,7 @@
 . C:\Skripte\mysql_connection.ps1 
 # connect ()
 . C:\Skripte\alc.ps1 
-# set-acl ($DirectoryPath, $IdentityRef, $rights)
+# acl () # set-acl ($DirectoryPath, $IdentityRef, $rights)
 . C:\Skripte\folder.ps1 
 # new-folder ()
 . C:\Skripte\share.ps1 
@@ -53,6 +53,8 @@ transport-user-in-group
 ## OUs verschachteln
 verschachel-ou
 
+## ACL setzten
+acl
 
 
 write-host ""
