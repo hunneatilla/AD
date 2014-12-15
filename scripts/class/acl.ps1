@@ -31,12 +31,15 @@ Set-ACL $DirectoryPath $ACL
 $global:Query = 'SELECT login, abteilung FROM benutzer'
 $mysqlresults = Get-SqlDataTable $Query
 
-switch ($($result.abteilung))
-{
-    "Geschäftsführung" {}
-    "Verwaltung" {}
-    "Schulungen Allgemein" {}
-    "Schulungen Technik" {}
-    "Schulung" {}
-    default {}
+ForEach ($result in $mysqlresults){
+    $IdentityRef = Get-ADUser -Identity $($result.benutzer)
+    switch ($($result.abteilung))
+    {
+        "Geschäftsführung" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
+        "Verwaltung" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
+        "Schulungen Allgemein" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
+        "Schulungen Technik" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
+        "Schulung" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "Write,Read,Modify" }
+        default {}
+    }
 }
