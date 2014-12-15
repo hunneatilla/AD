@@ -21,8 +21,7 @@ $PropagationFlag = [System.Security.AccessControl.PropagationFlags]::InheritOnly
 $AccessControlType =[System.Security.AccessControl.AccessControlType]::Allow
 $User = New-Object System.Security.Principal.NTAccount($IdentityRef)
 
-$ACE = New-Object System.Security.AccessControl.FileSystemAccessRule($User, $FileSystemRights,`
-    $InheritanceFlag, $PropagationFlag, $AccessControlType)
+$ACE = New-Object System.Security.AccessControl.FileSystemAccessRule($User, $FileSystemRights, $InheritanceFlag, $PropagationFlag, $AccessControlType)
 $ACL = Get-ACL $DirectoryPath
 $ACL.AddAccessRule($ACE)
 
@@ -32,8 +31,7 @@ Set-ACL $DirectoryPath $ACL
 function setacl2 ($DirectoryPath, $IdentityRef, $rights) 
 {
     $ACL = Get-Acl $DirectoryPath
-    $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
-        ($IdentityRef,$rights, "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
+    $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule ($IdentityRef,$rights, "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
     $ACL.AddAccessRule($ACE)
     Set-Acl $DirectoryPath $ACL
 }
