@@ -49,9 +49,9 @@ $global:Query = 'SELECT login, abteilung FROM benutzer'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-    $DirectoryPath="$NTDOMAIN\$($result.login)"
+    $DirectoryPath="C:\smart\home\$($result.login)"
     # $IdentityRef = Get-ADUser -Identity $($result.login)
-    $IdentityRef = "smart-in-hamburg\$($result.login)"
+    $IdentityRef = "$NTDOMAIN\$($result.login)"
     #for ($i=0; $i -le 0; $i++){
             write-host $DirectoryPath
             write-host $IdentityRef
