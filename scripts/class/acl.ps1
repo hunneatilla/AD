@@ -47,11 +47,11 @@ ForEach ($result in $mysqlresults){
     $DirectoryPath="c:\smart\home\$($result.login)"
     # $IdentityRef = Get-ADUser -Identity $($result.login)
     $IdentityRef = "smart-in-hamburg\$($result.login)"
-    for ($i=0; $i -le 0; $i++){
+    #for ($i=0; $i -le 0; $i++){
             write-host $DirectoryPath
             write-host $IdentityRef
             #setacl $DirectoryPath $IdentityRef "Write,Read"
             setacl2 $DirectoryPath $IdentityRef "Write,Read"
             break
-    }
+    #}
 }
