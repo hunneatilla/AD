@@ -25,3 +25,18 @@ $ACL.AddAccessRule($ACE)
 
 Set-ACL $DirectoryPath $ACL
 }
+
+
+## Homelaufwerke
+$global:Query = 'SELECT login, abteilung FROM benutzer'
+$mysqlresults = Get-SqlDataTable $Query
+
+switch ($($result.abteilung))
+{
+    "Geschäftsführung" {}
+    "Verwaltung" {}
+    "Schulungen Allgemein" {}
+    "Schulungen Technik" {}
+    "Schulung" {}
+    default {}
+}
