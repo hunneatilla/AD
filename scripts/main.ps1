@@ -2,64 +2,25 @@
 #. $(Get-Location).Path\mysql_connection.ps1
 . C:\Skripte\mysql_connection.ps1 # connect ()
 . C:\Skripte\alc.ps1 # set-acl ($DirectoryPath, $IdentityRef, $rights)
+. C:\Skripte\folder.ps1 # new-folder ()
+. C:\Skripte\share.ps1 # share ()
+. C:\Skripte\user.ps1 # new-user ()
+. C:\Skripte\pc.ps1 # new-pc ()
 
-## Funktion um die Verbindung aufzubauen
+## mySQL Verbindung aufbauen
 connect
 
 ## Ordner anlegen
-write-host ""
-write-host "Ordner werden angelegt:"
-New-Item -Path "C:\" -Name "smart" -ItemType directory
-New-Item -Path "C:\smart\" -Name "profile$" -ItemType directory
-New-Item -Path "C:\smart\" -Name "global" -ItemType directory
-New-Item -Path "C:\smart\" -Name "abteilung" -ItemType directory
-New-Item -Path "C:\smart\" -Name "schulung" -ItemType directory
-New-Item -Path "C:\smart\" -Name "home" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "geschäftsführung" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "verwaltung" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "schulung_allgemein" -ItemType directory
-New-Item -Path "C:\smart\abteilung\" -Name "schulung_technik" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum1" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum2" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum3" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum4" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum5" -ItemType directory
-New-Item -Path "C:\smart\schulung\" -Name "raum6" -ItemType directory
+new-folder
 
-#$global:Query = 'SELECT login FROM benutzer'
-#$mysqlresults = Get-SqlDataTable $Query
-
-#ForEach ($result in $mysqlresults){
-#	New-Item -Path "C:\smart\home\" -Name $($result.login) -ItemType directory
-#}
-write-host "Ordner wurden angelegt!"
+## AbteilungsShares anlegen
+share
 
 ## User anlegen
-write-host ""
-write-host "Benutzer werden angelegt:"
-$global:Query = 'SELECT * FROM benutzer'
-$mysqlresults = Get-SqlDataTable $Query
-
-ForEach ($result in $mysqlresults){
-	$Drive = "\\dc\$($result.login)"
-	$secure_string_pwd = convertto-securestring $($result.password) -asplaintext -force
-	New-ADUser -Name $($result.login) -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -Company $($result.company) -Department $($result.abteilung) -Description $($result.description) -EmailAddress $($result.email) -EmployeeID $($result.id) -GivenName $($result.vorname) -MobilePhone $($result.mphone) -Office $($result.office) -OfficePhone $($result.ophone) -PasswordNeverExpires $false -PasswordNotRequired $false -Surname $($result.nachname) -Title $($result.description) -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath "\\dc\profile$\%username%" -HomeDrive "Z:" -HomeDirectory $Drive
-	New-Item -Path "C:\smart\home\" -Name $($result.login) -ItemType directory
-	New-SmbShare -Name $($result.login) -Path C:\smart\home\$($result.login) -Description HomeShare
-	write-host "Benutzer $($result.login) wurde erstellt."
-}
+new-user
 
 ## PCs anlegen
-write-host ""
-write-host "Rechner werden angelegt:"
-$global:Query = 'SELECT * FROM rechner'
-$mysqlresults = Get-SqlDataTable $Query
-
-ForEach ($result in $mysqlresults){
-	[string]$dnsname = ""+$($result.name)+".smart-in-hamburg.org"
-	New-ADComputer -Description $($result.description) -DisplayName $($result.displayname) -DNSHostName $dnsname -Name $($result.name) -ManagedBy $($result.manage) -OperatingSystem $($result.os)
-	write-host "Rechner $($result.name) wurde erstellt."
-}
+new-pc
 
 ## OUs anlegen
 write-host ""
