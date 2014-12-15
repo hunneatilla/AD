@@ -42,13 +42,13 @@ new-group
 
 ## User und PCs in OU verlegen
 ## Benutzer
-transport-user-in-ou ()
+transport-user-in-ou
 
 ## PC
-transport-pc-in-ou ()
+transport-pc-in-ou
 
 ## User in Gruppen verlegen
-transport-user-in-group ()
+transport-user-in-group
 
 ## OUs verschachteln
 verschachtel-ou
