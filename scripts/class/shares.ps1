@@ -1,6 +1,6 @@
 ## AbteilungsShares anlegen
 
-function share ()
+function set-share ()
 {
 write-host ""
 write-host "Ordner werden freigegeben:"
