@@ -77,9 +77,9 @@ INSERT INTO ou (id,name,description) VALUES
 (12,'Raum6','Schulungen Raum6');
 INSERT INTO benutzer
 (id, ou, login, password, description, vorname, nachname, email, ophone, mphone, company, abteilung, office) VALUES
-(0, '1', 'grace.hopper', 'Test1234!', 'Geschäftsführung', 'Grace', 'Hopper', 'grace.hopper@smart.org', '04054000755', '99999999', 'Smart', '', '120'),
-(1, '1', 'silke.neuer', 'Test1234!', 'Recht und Corporate Governance', 'Silke', 'Neuer', 'Silke.Neuer@smart.org', '04054000756', '99999999', 'Smart', '', '121'),
-(2, '1', 'ben.sneidermann', 'Test1234!', 'Datenschutzbeauftragter', 'Ben', 'Sneidermann', 'Ben.Sneidermann@smart.org', '04054000757', '99999999', 'Smart', '', '122'),
+(0, '1', 'grace.hopper', 'Test1234!', 'Geschäftsführung', 'Grace', 'Hopper', 'grace.hopper@smart.org', '04054000755', '99999999', 'Smart', 'Geschäftsführung', '120'),
+(1, '1', 'silke.neuer', 'Test1234!', 'Recht und Corporate Governance', 'Silke', 'Neuer', 'Silke.Neuer@smart.org', '04054000756', '99999999', 'Smart', 'Geschäftsführung', '121'),
+(2, '1', 'ben.sneidermann', 'Test1234!', 'Datenschutzbeauftragter', 'Ben', 'Sneidermann', 'Ben.Sneidermann@smart.org', '04054000757', '99999999', 'Smart', 'Geschäftsführung', '122'),
 (3, '5', 'claudia.wigge', 'Test1234!', 'Eine Beschreibung', 'Claudia', 'Wigge', 'Claudia.Wigge@smart.org', '04054000758', '99999999', 'Smart', 'Schulungen Technik', '123'),
 (4, '5', 'gaby.witte', 'Test1234!', 'Eine Beschreibung', 'Gaby', 'Witte', 'Gaby.Witte@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '124'),
 (5, '5', 'joschua.bloch', 'Test1234!', 'Eine Beschreibung', 'Joschua', 'Bloch', 'Joschua.Bloch@smart.org', '04054000759', '99999999', 'Smart', 'Schulungen Technik', '125'),
