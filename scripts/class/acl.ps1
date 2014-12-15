@@ -1,64 +1,65 @@
 # http://www.powershellpraxis.de/index.php/berechtigungen
 
-Import-Module ActiveDirectory
+#. C:\Skripte\mysql_connection.ps1
+#connect
 
-. C:\Skripte\mysql_connection.ps1
-connect
-
-$NTDOMAIN = Get-ADDomain.name
-
-function setacl ($DirectoryPath, $IdentityRef, $rights)
+function new_acl ($DirectoryPath, $IdentityRef, $rights)
 {
+$ACL = Get-Acl -Path $DirectoryPath
 
-# $DirectoryPath="c:\temp\homes\homeuser001"
-# $IdentityRef = "DOM1\Karl_Napf"  #User oder Group
+$ACL.SetAccessRuleProtection($true,$false)
+$ACL.Access | ForEach {[Void]$ACL.RemoveAccessRule($_)}
 
-#$FileSystemRights = [System.Security.AccessControl.FileSystemRights]"131487"
-#$FileSystemRights = [System.Security.AccessControl.FileSystemRights]"Write,Read"
-$FileSystemRights = [System.Security.AccessControl.FileSystemRights]$rights
+$ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("NT-Autorität\SYSTEM","FullControl","ContainerInherit,ObjectInherit","None","Allow")))
+$ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("SMART\Administrator","FullControl","ContainerInherit,ObjectInherit","None","Allow")))
+$ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("SMART\$IdentityRef",$rights,"ContainerInherit,ObjectInherit","None","Allow")))
 
-$InheritanceFlag1 = [System.Security.AccessControl.InheritanceFlags]::ObjectInherit
-$InheritanceFlag2 = [System.Security.AccessControl.InheritanceFlags]::ContainerInherit
-$InheritanceFlag=$InheritanceFlag1 -bor $InheritanceFlag2
-
-$PropagationFlag = [System.Security.AccessControl.PropagationFlags]::InheritOnly
-$AccessControlType =[System.Security.AccessControl.AccessControlType]::Allow
-$User = New-Object System.Security.Principal.NTAccount($IdentityRef)
-
-$ACE = New-Object System.Security.AccessControl.FileSystemAccessRule($User, $FileSystemRights, $InheritanceFlag, $PropagationFlag, $AccessControlType)
-$ACL = Get-ACL $DirectoryPath
-$ACL.AddAccessRule($ACE)
-
-Set-ACL $DirectoryPath $ACL
+Set-Acl -Path $DirectoryPath $ACL
 }
-
-function setacl2 ($DirectoryPath, $IdentityRef, $rights) 
-{
-    write-host $DirectoryPath
-    write-host $IdentityRef
-    write-host $rights
-    $ACL = Get-Acl $DirectoryPath
-    #$ACE = New-Object System.Security.AccessControl.FileSystemAccessRule ("$IdentityRef","$rights", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
-    #$ACL.AddAccessRule($ACE)
-    $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule($IdentityRef,$rights,"ContainerInherit,ObjectInherit","None","Allow")))
-    
-    Set-Acl $DirectoryPath $ACL
-}
-
 
 ## Homelaufwerke
-$global:Query = 'SELECT login, abteilung FROM benutzer'
+$global:Query = 'SELECT ou, login, abteilung, office FROM benutzer'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-    $DirectoryPath="C:\smart\home\$($result.login)"
-    # $IdentityRef = Get-ADUser -Identity $($result.login)
-    $IdentityRef = "$NTDOMAIN\$($result.login)"
-    #for ($i=0; $i -le 0; $i++){
-            write-host $DirectoryPath
-            write-host $IdentityRef
-            #setacl $DirectoryPath $IdentityRef "Write,Read"
-            setacl2 $DirectoryPath $IdentityRef "Write,Read"
-            break
-    #}
+    $HomeDirectoryPath="C:\smart\home\$($result.login)"
+    $SchulungDirectoryPath="C:\smart\schulung\$($result.office)"
+    $AbteilungDirectoryPath="C:\smart\abteilung\$($result.abteilung)"
+    
+    # Alle
+    # global
+    new_acl "C:\smart\global" $($result.login) "Read"
+    
+    # Schulungsteilnehmer
+    if ($($result.abteilung) -eq "Schulung")
+    {
+        # home
+        new_acl $HomeDirectoryPath $($result.login) "Write,Read,Modify"
+        # schulung
+        new_acl $SchulungDirectoryPath $($result.login) "Read"
+    }
+    # alle Mitarbeiter
+    else
+    {
+        # home
+        new_acl $HomeDirectoryPath $($result.login) "FullControl"
+        # abteilung
+        new_acl $AbteilungDirectoryPath $($result.login) "Write,Read,Modify"
+        
+        # Schulungleiter
+        if ($($result.ou) -eq "4" -or $($result.ou) -eq "5")
+        {
+            for ($i=1; $i -le 6; $i++)
+            {
+                # schulung
+                new_acl "C:\smart\schulung\raum$i" $($result.login) "Write,Read,Modify"
+                
+                for ($k=1; $k -le 12; $k++)
+                {
+                # home
+                new_acl "C:\smart\home\s$i.p$k" $($result.login) "Write,Read,Modify"
+                }
+            }
+        }
+    }
 }
