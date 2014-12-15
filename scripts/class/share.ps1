@@ -6,7 +6,7 @@ write-host ""
 write-host "Ordner werden freigegeben:"
 New-SmbShare -Name "software$" -Path C:\smart\software$ -Description GlobalShare
 New-SmbShare -Name "profile$" -Path C:\smart\profile$ -Description GlobalShare
-New-SmbShare -Name "global" -Path C:\global -Description GlobalShare
+New-SmbShare -Name "global" -Path C:\smart\global -Description GlobalShare
 New-SmbShare -Name "geschäftsführung" -Path C:\smart\abteilung\geschäftsführung -Description GeschäftsführungShare
 New-SmbShare -Name "verwaltung" -Path C:\smart\abteilung\verwaltung -Description VerwaltungShare
 New-SmbShare -Name "schulung_allgemein" -Path C:\smart\abteilung\schulung_allgemein -Description SchulungAllgemeinShare
