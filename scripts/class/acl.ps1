@@ -37,13 +37,16 @@ $mysqlresults = Get-SqlDataTable $Query
 ForEach ($result in $mysqlresults){
     $DirectoryPath="c:\smart\home\$($result.login)"
     # $IdentityRef = Get-ADUser -Identity $($result.login)
+    $IdentityRef = "smart-in-hamburg\$($result.login)"
     switch ($($result.abteilung))
     {
         "Geschäftsführung" 
         {   
+            write-host $DirectoryPath
+            write-host $IdentityRef
             $ACL = Get-Acl $DirectoryPath
             $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
-                ("smart-in-hamburg\$($result.login)" ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
+                ($IdentityRef ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
             $ACL.AddAccessRule($ACE)
             Set-Acl $DirectoryPath $ACL 
         }
