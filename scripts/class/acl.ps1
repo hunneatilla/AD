@@ -1,5 +1,7 @@
 # http://www.powershellpraxis.de/index.php/berechtigungen
 
+Import-Module ActiveDirectory
+
 . C:\Skripte\mysql_connection.ps1
 connect
 
