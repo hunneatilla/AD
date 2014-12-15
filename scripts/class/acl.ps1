@@ -35,14 +35,18 @@ $global:Query = 'SELECT login, abteilung FROM benutzer'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-    $IdentityRef = Get-ADUser -Identity $($result.benutzer)
+    $DirectoryPath="c:\smart\home\$($result.login)"
+    $IdentityRef = Get-ADUser -Identity $($result.login)
     switch ($($result.abteilung))
     {
-        "Geschäftsführung" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
-        "Verwaltung" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
-        "Schulungen Allgemein" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
-        "Schulungen Technik" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "FullControl" }
-        "Schulung" { set-acl "C:\smart\home\$($result.login)" $IdentityRef "Write,Read,Modify" }
+        "Geschäftsführung" 
+        {   
+            $ACL = Get-Acl $DirectoryPath
+            $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
+                ($IdentityRef ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
+            $ACL.AddAccessRule($ACE)
+            Set-Acl $DirectoryPath $ACL 
+        }
         default {}
     }
 }
