@@ -38,10 +38,7 @@ ForEach ($result in $mysqlresults){
     $DirectoryPath="c:\smart\home\$($result.login)"
     # $IdentityRef = Get-ADUser -Identity $($result.login)
     $IdentityRef = "smart-in-hamburg\$($result.login)"
-    switch ($($result.abteilung))
-    {
-        "Geschäftsführung" 
-        {   
+    for ($i=0; $i -le 0; $i++){
             write-host $DirectoryPath
             write-host $IdentityRef
             $ACL = Get-Acl $DirectoryPath
@@ -49,7 +46,6 @@ ForEach ($result in $mysqlresults){
                 ($IdentityRef ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
             $ACL.AddAccessRule($ACE)
             Set-Acl $DirectoryPath $ACL 
-        }
-        default {}
+        
     }
 }
