@@ -68,12 +68,13 @@ INSERT INTO ou (id,name,description) VALUES
 (3,'Schulung','Schulungen'),
 (4,'Allgemein','Schulungen Allgemein'),
 (5,'Technik','Schulungen Technik'),
-(6,'Raum1','Schulungen Raum1'),
-(7,'Raum2','Schulungen Raum2'),
-(8,'Raum3','Schulungen Raum3'),
-(9,'Raum4','Schulungen Raum4'),
-(10,'Raum5','Schulungen Raum5'),
-(11,'Raum6','Schulungen Raum6');
+(6,'Räume','Räume'),
+(7,'Raum1','Schulungen Raum1'),
+(8,'Raum2','Schulungen Raum2'),
+(9,'Raum3','Schulungen Raum3'),
+(10,'Raum4','Schulungen Raum4'),
+(11,'Raum5','Schulungen Raum5'),
+(12,'Raum6','Schulungen Raum6');
 INSERT INTO benutzer
 (id, ou, login, password, description, vorname, nachname, email, ophone, mphone, company, abteilung, office) VALUES
 (0, '1', 'grace.hopper', 'Test1234!', 'Geschäftsführung', 'Grace', 'Hopper', 'grace.hopper@smart.org', '04054000755', '99999999', 'Smart', '', '120'),
