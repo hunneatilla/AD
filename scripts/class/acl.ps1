@@ -3,6 +3,8 @@
 . C:\Skripte\mysql_connection.ps1
 connect
 
+$NTDOMAIN = Get-ADDomain.name
+
 function setacl ($DirectoryPath, $IdentityRef, $rights)
 {
 
@@ -47,7 +49,7 @@ $global:Query = 'SELECT login, abteilung FROM benutzer'
 $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
-    $DirectoryPath="c:\smart\home\$($result.login)"
+    $DirectoryPath="$NTDOMAIN\$($result.login)"
     # $IdentityRef = Get-ADUser -Identity $($result.login)
     $IdentityRef = "smart-in-hamburg\$($result.login)"
     #for ($i=0; $i -le 0; $i++){
