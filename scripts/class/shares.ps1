@@ -4,6 +4,7 @@ function set-share ()
 {
 write-host ""
 write-host "Ordner werden freigegeben:"
+New-SmbShare -Name "software$" -Path C:\smart\software$ -Description GlobalShare
 New-SmbShare -Name "global" -Path C:\global -Description GlobalShare
 New-SmbShare -Name "geschäftsführung" -Path C:\smart\abteilung\geschäftsführung -Description GeschäftsführungShare
 New-SmbShare -Name "verwaltung" -Path C:\smart\abteilung\verwaltung -Description VerwaltungShare
