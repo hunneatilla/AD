@@ -3,15 +3,15 @@
 . C:\Skripte\mysql_connection.ps1
 connect
 
-function set-acl ($DirectoryPath, $IdentityRef, $rights)
+function setacl ($DirectoryPath, $IdentityRef, $rights)
 {
 
 # $DirectoryPath="c:\temp\homes\homeuser001"
 # $IdentityRef = "DOM1\Karl_Napf"  #User oder Group
 
-$FileSystemRights = [System.Security.AccessControl.FileSystemRights]"131487"
+#$FileSystemRights = [System.Security.AccessControl.FileSystemRights]"131487"
 #$FileSystemRights = [System.Security.AccessControl.FileSystemRights]"Write,Read"
-#$FileSystemRights = [System.Security.AccessControl.FileSystemRights]$rights
+$FileSystemRights = [System.Security.AccessControl.FileSystemRights]$rights
 
 $InheritanceFlag1 = [System.Security.AccessControl.InheritanceFlags]::ObjectInherit
 $InheritanceFlag2 = [System.Security.AccessControl.InheritanceFlags]::ContainerInherit
@@ -29,6 +29,15 @@ $ACL.AddAccessRule($ACE)
 Set-ACL $DirectoryPath $ACL
 }
 
+function setacl2 ($DirectoryPath, $IdentityRef, $rights) 
+{
+    $ACL = Get-Acl $DirectoryPath
+    $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
+        ($IdentityRef,$rights, "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
+    $ACL.AddAccessRule($ACE)
+    Set-Acl $DirectoryPath $ACL
+}
+
 
 ## Homelaufwerke
 $global:Query = 'SELECT login, abteilung FROM benutzer'
@@ -41,6 +50,8 @@ ForEach ($result in $mysqlresults){
     for ($i=0; $i -le 0; $i++){
             write-host $DirectoryPath
             write-host $IdentityRef
-            set-acl ($DirectoryPath, $IdentityRef, "Write,Read")
+            #setacl $DirectoryPath $IdentityRef "Write,Read"
+            setacl2 $DirectoryPath $IdentityRef "Write,Read"
+            break
     }
 }
