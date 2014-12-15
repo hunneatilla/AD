@@ -30,10 +30,13 @@ Set-ACL $DirectoryPath $ACL
 
 function setacl2 ($DirectoryPath, $IdentityRef, $rights) 
 {
+    write-host $DirectoryPath
+    write-host $IdentityRef
+    write-host $rights
     $ACL = Get-Acl $DirectoryPath
     #$ACE = New-Object System.Security.AccessControl.FileSystemAccessRule ("$IdentityRef","$rights", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
     #$ACL.AddAccessRule($ACE)
-    $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("$IdentityRef","$rights","ContainerInherit,ObjectInherit","None","Allow")))
+    $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule($IdentityRef,$rights,"ContainerInherit,ObjectInherit","None","Allow")))
     
     Set-Acl $DirectoryPath $ACL
 }
