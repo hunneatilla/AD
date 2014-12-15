@@ -1,5 +1,8 @@
 # http://www.powershellpraxis.de/index.php/berechtigungen
 
+. C:\Skripte\mysql_connection.ps1
+connect
+
 function set-acl ($DirectoryPath, $IdentityRef, $rights)
 {
 
