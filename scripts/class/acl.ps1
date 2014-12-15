@@ -2,8 +2,6 @@
 
 function set-acl ($DirectoryPath, $IdentityRef, $rights)
 {
-Set-StrictMode -Version "2.0"
-Clear-Host
 
 # $DirectoryPath="c:\temp\homes\homeuser001"
 # $IdentityRef = "DOM1\Karl_Napf"  #User oder Group
