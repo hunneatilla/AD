@@ -41,11 +41,6 @@ ForEach ($result in $mysqlresults){
     for ($i=0; $i -le 0; $i++){
             write-host $DirectoryPath
             write-host $IdentityRef
-            $ACL = Get-Acl $DirectoryPath
-            $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
-                ($IdentityRef ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
-            $ACL.AddAccessRule($ACE)
-            Set-Acl $DirectoryPath $ACL 
-        
+            set-acl ($DirectoryPath, $IdentityRef, "Write,Read")
     }
 }
