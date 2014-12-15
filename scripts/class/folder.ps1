@@ -5,6 +5,7 @@ function new-folder ()
 write-host ""
 write-host "Ordner werden angelegt:"
 New-Item -Path "C:\" -Name "smart" -ItemType directory
+New-Item -Path "C:\smart\" -Name "software$" -ItemType directory
 New-Item -Path "C:\smart\" -Name "profile$" -ItemType directory
 New-Item -Path "C:\smart\" -Name "global" -ItemType directory
 New-Item -Path "C:\smart\" -Name "abteilung" -ItemType directory
