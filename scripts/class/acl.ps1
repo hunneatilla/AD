@@ -36,14 +36,14 @@ $mysqlresults = Get-SqlDataTable $Query
 
 ForEach ($result in $mysqlresults){
     $DirectoryPath="c:\smart\home\$($result.login)"
-    $IdentityRef = Get-ADUser -Identity $($result.login)
+    # $IdentityRef = Get-ADUser -Identity $($result.login)
     switch ($($result.abteilung))
     {
         "Geschäftsführung" 
         {   
             $ACL = Get-Acl $DirectoryPath
             $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
-                ("smart-in-hamburg\$IdentityRef" ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
+                ("smart-in-hamburg\$($result.login)" ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
             $ACL.AddAccessRule($ACE)
             Set-Acl $DirectoryPath $ACL 
         }
