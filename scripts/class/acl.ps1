@@ -43,7 +43,7 @@ ForEach ($result in $mysqlresults){
         {   
             $ACL = Get-Acl $DirectoryPath
             $ACE = New-Object System.Security.AccessControl.FileSystemAccessRule `
-                ($IdentityRef ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
+                ("smart-in-hamburg\$IdentityRef" ,"Write, Read", "ContainerInherit, ObjectInherit", "Inheritonly", "Allow")
             $ACL.AddAccessRule($ACE)
             Set-Acl $DirectoryPath $ACL 
         }
