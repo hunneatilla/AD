@@ -2,16 +2,24 @@
 
 #. C:\Skripte\mysql_connection.ps1
 #connect
+#acl
+
+$arrPath = Array()
 
 function new_acl ($DirectoryPath, $IdentityRef, $rights)
 {
     $ACL = Get-Acl -Path $DirectoryPath
     
-    $ACL.SetAccessRuleProtection($true,$false)
-    $ACL.Access | ForEach {[Void]$ACL.RemoveAccessRule($_)}
-    
-    $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("NT-Autorität\SYSTEM","FullControl","ContainerInherit,ObjectInherit","None","Allow")))
-    $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("SMART\Administrator","FullControl","ContainerInherit,ObjectInherit","None","Allow")))
+    if($arrPath -notcontains $DirectoryPath)
+    {
+        $arrPath += $DirectoryPath
+        
+        $ACL.SetAccessRuleProtection($true,$false)
+        $ACL.Access | ForEach {[Void]$ACL.RemoveAccessRule($_)}
+        
+        $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("NT-Autorität\SYSTEM","FullControl","ContainerInherit,ObjectInherit","None","Allow")))
+        $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("SMART\Administrator","FullControl","ContainerInherit,ObjectInherit","None","Allow")))
+    }
     $ACL.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("SMART\$IdentityRef",$rights,"ContainerInherit,ObjectInherit","None","Allow")))
     
     Set-Acl -Path $DirectoryPath $ACL
