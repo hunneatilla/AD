@@ -4,15 +4,14 @@
 #connect
 #acl
 
-$arrPath = Array()
-
 function new_acl ($DirectoryPath, $IdentityRef, $rights)
 {
     $ACL = Get-Acl -Path $DirectoryPath
     
+    # Wenn der Pfad noch nicht bearbeitet wurde, dann lösche alle bisherigen Berechtigungen
     if($arrPath -notcontains $DirectoryPath)
     {
-        $arrPath += $DirectoryPath
+        [String[]] $arrPath += $DirectoryPath
         
         $ACL.SetAccessRuleProtection($true,$false)
         $ACL.Access | ForEach {[Void]$ACL.RemoveAccessRule($_)}
@@ -27,6 +26,7 @@ function new_acl ($DirectoryPath, $IdentityRef, $rights)
 
 function acl ()
 {
+    write-host "ACL werden erstellt!"
     ## Homelaufwerke
     $global:Query = 'SELECT ou, login, abteilung, office FROM benutzer'
     $mysqlresults = Get-SqlDataTable $Query
@@ -73,4 +73,5 @@ function acl ()
             }
         }
     }
+    write-host "ACL wurden erstellt!"
 }
