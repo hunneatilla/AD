@@ -2,7 +2,6 @@
 
 #. C:\Skripte\mysql_connection.ps1
 #connect
-#acl
 
 [String[]] $global:arrPath = $null
 
@@ -75,3 +74,6 @@ function acl ()
     }
     write-host "ACL wurden erstellt!"
 }
+
+
+#acl
