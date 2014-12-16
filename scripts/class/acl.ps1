@@ -29,6 +29,27 @@ function new_acl ($DirectoryPath, $IdentityRef, $rights)
 function acl ()
 {
     write-host "ACL werden erstellt!"
+    
+    # Alle
+    # global
+    new_acl "C:\smart\global" "global" "Read"
+    new_acl "C:\smart\abteilung\geschäftsführung" "geschäftsführung" "Write,Read,Modify"
+    new_acl "C:\smart\abteilung\verwaltung" "verwaltung" "Write,Read,Modify"
+    new_acl "C:\smart\abteilung\schulung_allgemein" "schulung_allgemein" "Write,Read,Modify"
+    new_acl "C:\smart\abteilung\schulung_technik" "schulung_technik" "Write,Read,Modify"
+    new_acl "C:\smart\schulung\raum1" "raum1" "Read"
+    new_acl "C:\smart\schulung\raum1" "schulungsleiter" "Write,Read,Modify"
+    new_acl "C:\smart\schulung\raum2" "raum2" "Read"
+    new_acl "C:\smart\schulung\raum2" "schulungsleiter" "Write,Read,Modify"
+    new_acl "C:\smart\schulung\raum3" "raum3" "Read"
+    new_acl "C:\smart\schulung\raum3" "schulungsleiter" "Write,Read,Modify"
+    new_acl "C:\smart\schulung\raum4" "raum4" "Read"
+    new_acl "C:\smart\schulung\raum4" "schulungsleiter" "Write,Read,Modify"
+    new_acl "C:\smart\schulung\raum5" "raum5" "Read"
+    new_acl "C:\smart\schulung\raum5" "schulungsleiter" "Write,Read,Modify"
+    new_acl "C:\smart\schulung\raum6" "raum6" "Read"
+    new_acl "C:\smart\schulung\raum6" "schulungsleiter" "Write,Read,Modify"
+    
     ## Homelaufwerke
     $global:Query = 'SELECT ou, login, abteilung, office FROM benutzer'
     $mysqlresults = Get-SqlDataTable $Query
@@ -38,41 +59,18 @@ function acl ()
         $SchulungDirectoryPath="C:\smart\schulung\$($result.office)"
         $AbteilungDirectoryPath="C:\smart\abteilung\$($result.abteilung)"
         
-        # Alle
-        # global
-        new_acl "C:\smart\global" $($result.login) "Read"
-        
         # Schulungsteilnehmer
         if ($($result.abteilung) -eq "Schulung")
         {
             # home
             new_acl $HomeDirectoryPath $($result.login) "Write,Read,Modify"
-            # schulung
-            new_acl $SchulungDirectoryPath $($result.login) "Read"
+            new_acl $HomeDirectoryPath "schulungsleiter" "Write,Read,Modify"
         }
         # alle Mitarbeiter
         else
         {
             # home
             new_acl $HomeDirectoryPath $($result.login) "FullControl"
-            # abteilung
-            new_acl $AbteilungDirectoryPath $($result.login) "Write,Read,Modify"
-            
-            # Schulungleiter
-            if ($($result.ou) -eq "4" -or $($result.ou) -eq "5")
-            {
-                for ($i=1; $i -le 6; $i++)
-                {
-                    # schulung
-                    new_acl "C:\smart\schulung\raum$i" $($result.login) "Write,Read,Modify"
-                    
-                    for ($k=1; $k -le 12; $k++)
-                    {
-                    # home
-                    new_acl "C:\smart\home\s$i.p$k" $($result.login) "Write,Read,Modify"
-                    }
-                }
-            }
         }
     }
     write-host "ACL wurden erstellt!"
