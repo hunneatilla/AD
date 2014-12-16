@@ -2,7 +2,7 @@
 #. $(Get-Location).Path\mysql_connection.ps1
 . C:\Skripte\mysql_connection.ps1 
 # connect ()
-. C:\Skripte\alc.ps1 
+. C:\Skripte\acl.ps1 
 # acl () # new_acl ($DirectoryPath, $IdentityRef, $rights)
 . C:\Skripte\folder.ps1 
 # new-folder ()
