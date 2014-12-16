@@ -4,14 +4,16 @@
 #connect
 #acl
 
+[String[]] $global:arrPath = $null
+
 function new_acl ($DirectoryPath, $IdentityRef, $rights)
 {
     $ACL = Get-Acl -Path $DirectoryPath
     
     # Wenn der Pfad noch nicht bearbeitet wurde, dann lösche alle bisherigen Berechtigungen
-    if($arrPath -notcontains $DirectoryPath)
+    if($global:arrPath -notcontains $DirectoryPath)
     {
-        [String[]] $arrPath += $DirectoryPath
+        $global:arrPath += $DirectoryPath
         
         $ACL.SetAccessRuleProtection($true,$false)
         $ACL.Access | ForEach {[Void]$ACL.RemoveAccessRule($_)}
