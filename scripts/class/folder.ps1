@@ -22,11 +22,5 @@ New-Item -Path "C:\smart\schulung\" -Name "raum4" -ItemType directory
 New-Item -Path "C:\smart\schulung\" -Name "raum5" -ItemType directory
 New-Item -Path "C:\smart\schulung\" -Name "raum6" -ItemType directory
 
-#$global:Query = 'SELECT login FROM benutzer'
-#$mysqlresults = Get-SqlDataTable $Query
-
-#ForEach ($result in $mysqlresults){
-#	New-Item -Path "C:\smart\home\" -Name $($result.login) -ItemType directory
-#}
 write-host "Ordner wurden angelegt!"
 }
