@@ -1,9 +1,0 @@
-$username2 = "testi"
-$DriveL = "Z:"
-$Drive = "\\dc\Homedrive.$username2"
-$secure_string_pwd = convertto-securestring Changeme1! -asplaintext -force
-New-ADUser -Name $username2 -AccountNotDelegated $false -AuthType "Negotiate" -CannotChangePassword $false -ChangePasswordAtLogon $true -Company "test" -Department "test" -Description "test" -EmailAddress "test" -EmployeeID "999" -GivenName "test" -MobilePhone "0123456789" -Office "556" -OfficePhone "1256389" -PasswordNeverExpires $false -PasswordNotRequired $false -Surname "tester" -Title "test" -TrustedForDelegation $true -AccountPassword $secure_string_pwd -Enabled $true -ProfilePath "\\dc\profiles$\%username%" -HomeDrive $DriveL -HomeDirectory $Drive
-New-Item -Path "C:\" -Name "test" -ItemType directory
-New-Item -Path "C:\test" -Name $username2 -ItemType directory
-New-SmbShare -Name Homedrive.$username2 -Path C:\test\$username2 -Description HomeShare
-#dollar nicht vergessen
